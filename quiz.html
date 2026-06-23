@@ -102,6 +102,33 @@ cursor:pointer;
 
 <!-- REVIEW -->
 <div class="card" id="reviewPage"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5Cz_CL_YBG7VVMBtbsdMBRY6erEezjEE",
+  authDomain: "javaminiquiz.firebaseapp.com",
+  projectId: "javaminiquiz",
+  storageBucket: "javaminiquiz.firebasestorage.app",
+  messagingSenderId: "493620092943",
+  appId: "1:493620092943:web:e2f300b30985eb9b8cc37a",
+  measurementId: "G-ZEPKRKN3CN"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.db = db;
+window.addDoc = addDoc;
+window.collection = collection;
+window.getDocs = getDocs;
+</script>
 
 
 <script>
@@ -497,7 +524,7 @@ show();
 
 /* FINISH */
 
-function finish(){
+async function finish(){
 
 if(ans[i]===null){
 document.getElementById("msg").innerText="Select an option";
@@ -556,9 +583,15 @@ if(existingIndex !== -1){
 
 }
 
-localStorage.setItem(
-"leaderboard",
-JSON.stringify(leaderboard)
+await addDoc(
+collection(db, "leaderboard"),
+{
+  name: user,
+  score: score,
+  time: timeTaken,
+  attempts: 1,
+  date: dateTaken
+}
 );
 document.getElementById("quizPage").style.display="none";
 
