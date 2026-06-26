@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Certificate Verification</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#eef5ff;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.card{
+
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 0 20px rgba(0,0,0,.2);
+width:500px;
+text-align:center;
+
+}
+
+.success{
+
+color:green;
+font-size:28px;
+
+}
+
+.fail{
+
+color:red;
+font-size:28px;
+
+}
+
+table{
+
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+
+}
+
+td{
+
+padding:10px;
+border-bottom:1px solid #ddd;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card" id="box">
+
+Loading...
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+
+getFirestore,
+
+doc,
+
+getDoc
+
+}
+
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey:"AIzaSyA5Cz_CL_YBG7VVMBtbsdMBRY6erEezjEE",
+
+authDomain:"javaminiquiz.firebaseapp.com",
+
+projectId:"javaminiquiz",
+
+storageBucket:"javaminiquiz.firebasestorage.app",
+
+messagingSenderId:"493620092943",
+
+appId:"1:493620092943:web:e2f300b30985eb9b8cc37a"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+const db=getFirestore(app);
+
+const params=new URLSearchParams(location.search);
+
+const id=params.get("id");
+
+const box=document.getElementById("box");
+
+if(!id){
+
+box.innerHTML="<h2 class='fail'>Invalid Certificate</h2>";
+
+}else{
+
+const snap=await getDoc(doc(db,"certificates",id));
+
+if(snap.exists()){
+
+const c=snap.data();
+
+box.innerHTML=`
+
+<h1 class="success">✔ Certificate Verified</h1>
+
+<table>
+
+<tr>
+
+<td><b>Certificate ID</b></td>
+
+<td>${c.certificateId}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Name</b></td>
+
+<td>${c.name}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Score</b></td>
+
+<td>${c.score}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Percentage</b></td>
+
+<td>${c.percentage}%</td>
+
+</tr>
+
+<tr>
+
+<td><b>Date</b></td>
+
+<td>${c.date}</td>
+
+</tr>
+
+</table>
+
+`;
+
+}else{
+
+box.innerHTML="<h2 class='fail'>❌ Certificate Not Found</h2>";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
