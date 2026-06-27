@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Certificate Verification</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Segoe UI,Arial,sans-serif;
+background:#eef5ff;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+
+width:600px;
+
+background:white;
+
+padding:40px;
+
+border-radius:15px;
+
+box-shadow:0 12px 30px rgba(0,0,0,.15);
+
+text-align:center;
+
+}
+
+.success{
+
+color:#0a8f3d;
+
+font-size:32px;
+
+margin-bottom:10px;
+
+}
+
+.fail{
+
+color:#d32f2f;
+
+font-size:30px;
+
+}
+
+table{
+
+width:100%;
+
+margin-top:20px;
+
+border-collapse:collapse;
+
+font-size:17px;
+
+}
+
+td{
+
+padding:14px;
+
+border-bottom:1px solid #e5e5e5;
+
+text-align:left;
+
+}
+
+td:first-child{
+
+font-weight:bold;
+
+width:45%;
+
+background:#f8fbff;
+
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card" id="box">
+
+Loading...
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+
+getFirestore,
+
+doc,
+
+getDoc
+
+}
+
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey:"AIzaSyA5Cz_CL_YBG7VVMBtbsdMBRY6erEezjEE",
+
+authDomain:"javaminiquiz.firebaseapp.com",
+
+projectId:"javaminiquiz",
+
+storageBucket:"javaminiquiz.firebasestorage.app",
+
+messagingSenderId:"493620092943",
+
+appId:"1:493620092943:web:e2f300b30985eb9b8cc37a"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+const db=getFirestore(app);
+
+const params=new URLSearchParams(location.search);
+
+const id=params.get("id");
+
+const box=document.getElementById("box");
+
+if(!id){
+
+box.innerHTML="<h2 class='fail'>Invalid Certificate</h2>";
+
+}else{
+
+const snap=await getDoc(doc(db,"certificates",id));
+
+if(snap.exists()){
+
+const c=snap.data();
+box.innerHTML=`
+
+<h1 class="success">✔ CERTIFICATE VERIFIED</h1>
+
+<p style="
+color:#666;
+margin-top:-5px;
+margin-bottom:25px;
+font-size:16px;
+">
+This certificate has been successfully verified.
+</p>
+
+<hr style="margin-bottom:25px;">
+
+<table>
+
+<tr>
+<td><b>Certificate ID</b></td>
+<td>${c.certificateId}</td>
+</tr>
+
+<tr>
+<td><b>Candidate Name</b></td>
+<td>${c.name}</td>
+</tr>
+
+<tr>
+<td><b>Course</b></td>
+<td>Java Quiz Challenge</td>
+</tr>
+
+<tr>
+<td><b>Score</b></td>
+<td>${c.score} / ${c.totalQuestions || 50}</td>
+</tr>
+
+<tr>
+<td><b>Percentage</b></td>
+<td>${c.percentage}%</td>
+</tr>
+
+<tr>
+<td><b>Issued On</b></td>
+<td>${c.date}</td>
+</tr>
+
+<tr>
+<td><b>Status</b></td>
+<td style="color:green;font-weight:bold;">
+✅ Verified
+</td>
+</tr>
+
+</table>
+
+<hr style="margin-top:25px;">
+
+<p style="
+color:#777;
+font-size:14px;
+">
+Issued by <b>Kaitha Teja Sri</b>
+</p>
+
+`;
+}else{
+
+box.innerHTML=`
+
+<h1 class="fail">❌ CERTIFICATE NOT FOUND</h1>
+
+<p style="
+color:#666;
+font-size:16px;
+margin-bottom:25px;
+">
+The certificate you are trying to verify does not exist
+or may have been removed.
+</p>
+
+<hr style="margin-bottom:25px;">
+
+<table>
+
+<tr>
+<td><b>Certificate ID</b></td>
+<td>${id}</td>
+</tr>
+
+<tr>
+<td><b>Status</b></td>
+<td style="color:red;font-weight:bold;">
+Invalid Certificate
+</td>
+</tr>
+
+<tr>
+<td><b>Verification</b></td>
+<td>Failed</td>
+</tr>
+
+</table>
+
+<hr style="margin-top:25px;">
+
+<p style="
+color:#777;
+font-size:14px;
+">
+If you believe this is an error, please contact the
+certificate issuer.
+</p>
+
+`;
+
+}
+}
+
+</script>
+
+</body>
+
+</html>
