@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Leaderboard</title>
+
+<style>
+body{
+font-family:Segoe UI;
+background:#eef5ff;
+padding:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#2563eb;
+color:white;
+}
+
+button{
+margin-top:20px;
+padding:10px 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🏆 Leaderboard</h2>
+
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Name</th>
+<th>Score</th>
+<th>Attempts</th>
+<th>Time Taken</th>
+<th>Attempted on</th>
+</tr>
+</thead>
+
+<tbody id="board"></tbody>
+</table>
+
+
+<button onclick="window.location.href='quiz.html'">
+Back To Quiz
+</button>
+
+<button onclick="window.location.href='index.html'">
+Back To Home
+</button>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5Cz_CL_YBG7VVMBtbsdMBRY6erEezjEE",
+  authDomain: "javaminiquiz.firebaseapp.com",
+  projectId: "javaminiquiz",
+  storageBucket: "javaminiquiz.firebasestorage.app",
+  messagingSenderId: "493620092943",
+  appId: "1:493620092943:web:e2f300b30985eb9b8cc37a",
+  measurementId: "G-ZEPKRKN3CN"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadLeaderboard(){
+
+let data = [];
+
+const querySnapshot =
+await getDocs(collection(db, "leaderboard"));
+
+querySnapshot.forEach((doc) => {
+data.push(doc.data());
+});
+
+data.sort((a,b)=>{
+
+if(b.score !== a.score)
+return b.score - a.score;
+
+return a.time - b.time;
+
+});
+
+let html = "";
+
+data.forEach((p,index)=>{
+
+let medal = "";
+
+if(index===0) medal="🥇";
+else if(index===1) medal="🥈";
+else if(index===2) medal="🥉";
+
+html += `
+<tr>
+
+<td>${medal} ${index+1}</td>
+
+<td>${p.name}</td>
+
+<td>${p.score}/50</td>
+
+<td>${p.attempts || 1}</td>
+
+<td>
+${Math.floor(p.time/60000)}m
+${Math.floor((p.time%60000)/1000)}s
+${p.time%1000}ms
+</td>
+
+<td>${p.date ? p.date : "N/A"}</td>
+
+</tr>
+`;
+
+});
+
+document.getElementById("board").innerHTML = html;
+
+}
+
+loadLeaderboard();
+
+</script>
+
+</body>
+</html>
